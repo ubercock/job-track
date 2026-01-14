@@ -515,9 +515,13 @@ export function TrackerClient() {
         }}
       >
         <DialogContent className="sm:max-w-lg rounded-3xl">
-          <DialogHeader>
+          <DialogHeader className="pb-2">
             <DialogTitle>{editingId ? "Edit application" : "Add application"}</DialogTitle>
-          </DialogHeader>
+              <p className="text-sm text-muted-foreground">
+                Save company, role, status, and optional notes. Everything persists locally.
+              </p>
+            </DialogHeader>
+          <div className="my-2 h-px w-full bg-border" />  
 
           <div className="grid gap-4">
             <div className="grid gap-2">
@@ -601,6 +605,7 @@ export function TrackerClient() {
               <Button onClick={upsert}>{editingId ? "Save changes" : "Add application"}</Button>
             </div>
           </div>
+          
         </DialogContent>
       </Dialog>
 

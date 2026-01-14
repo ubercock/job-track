@@ -113,25 +113,25 @@ Open: http://localhost:3000
 
 ## Interview Talking Points (10)
 
-**App Router structure: separated marketing vs product pages for clarity and SEO.**
+-***App Router structure: separated marketing vs product pages for clarity and SEO.***
 
-**Client/server boundary: interactive pages use use client; static shells remain server-rendered.**
+-***Client/server boundary: interactive pages use use client; static shells remain server-rendered.***
 
-**Persistence choice: localStorage simulates backend persistence without adding complexity.**
+-***Persistence choice: localStorage simulates backend persistence without adding complexity.***
 
-**Data model: strongly typed JobApplication keeps UI predictable and reduces bugs.**
+-***Data model: strongly typed JobApplication keeps UI predictable and reduces bugs.***
 
-**Hook design: useLocalStorageState loads once and safely recovers from corrupted JSON.**
+-***Hook design: useLocalStorageState loads once and safely recovers from corrupted JSON.***
 
-**UX states: intentionally designed empty and filtered-to-zero states to avoid “dead UI”.**
+-***UX states: intentionally designed empty and filtered-to-zero states to avoid “dead UI”.***
 
-**Accessible destructive actions: replaced confirm() with AlertDialog for focus + intent clarity.**
+-***Accessible destructive actions: replaced confirm() with AlertDialog for focus + intent clarity.***
 
-**Performance tradeoff: avoided heavy charts; used CSS bars for fast insights visuals.**
+-***Performance tradeoff: avoided heavy charts; used CSS bars for fast insights visuals.***
 
-**Reusable components: consistent design language via shadcn/ui; no “UI soup”.**
+-***Reusable components: consistent design language via shadcn/ui; no “UI soup”.***
 
-**Preference sync: density stored + applied globally using a single PrefsSync component.**
+-***Preference sync: density stored + applied globally using a single PrefsSync component.***
 
 ## Hiring Manager Checklist (what this proves)
 

@@ -5,21 +5,36 @@ import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { DEFAULT_PREFS, JobApplication, JobStatus, STATUS_LABEL, STATUS_ORDER, UserPrefs } from "@/lib/types";
+import {
+  DEFAULT_PREFS,
+  JobApplication,
+  JobStatus,
+  STATUS_LABEL,
+  STATUS_ORDER,
+  SortMode,
+  UserPrefs,
+} from "@/lib/types";
 import { STORAGE_KEYS, useLocalStorageState } from "@/lib/storage";
-
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-
-type SortMode = "newest" | "oldest" | "company" | "status";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function makeId() {
-  // crypto.randomUUID is best; fallback is fine for demos
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return (crypto as Crypto).randomUUID();
   }
@@ -35,13 +50,31 @@ function isValidUrl(url: string) {
   }
 }
 
-function statusBadgeVariant(status: JobStatus) {
-  // shadcn Badge variants differ per setup; keep simple classNames:
+function formatYMD(ymd: string) {
+  // yyyy-mm-dd -> readable local date
+  try {
+    const d = new Date(ymd + "T00:00:00");
+    return new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" }).format(d);
+  } catch {
+    return ymd;
+  }
+}
+
+function formatTimestamp(ts: number) {
+  try {
+    return new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" }).format(new Date(ts));
+  } catch {
+    return String(ts);
+  }
+}
+
+function badgeClasses(status: JobStatus) {
+  // Consistent, subtle, premium (no loud colors)
   const map: Record<JobStatus, string> = {
-    applied: "bg-muted text-foreground",
-    interview: "bg-amber-50 text-amber-800 border border-amber-200",
-    offer: "bg-emerald-50 text-emerald-800 border border-emerald-200",
-    rejected: "bg-rose-50 text-rose-800 border border-rose-200",
+    applied: "bg-muted text-foreground border-border",
+    interview: "bg-amber-50 text-amber-900 border-amber-200",
+    offer: "bg-emerald-50 text-emerald-900 border-emerald-200",
+    rejected: "bg-rose-50 text-rose-900 border-rose-200",
   };
   return map[status];
 }
@@ -50,18 +83,20 @@ export function TrackerClient() {
   const [apps, setApps] = useLocalStorageState<JobApplication[]>(STORAGE_KEYS.apps, []);
   const [prefs] = useLocalStorageState<UserPrefs>(STORAGE_KEYS.prefs, DEFAULT_PREFS);
 
-
   // Controls
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<JobStatus | "all">("all");
-const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
-
-// If prefs change later, keep the current sort (don’t override user mid-session)
-// If you want it to always follow prefs, you could sync it here.
+  const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
 
   // Dialog + form state
-  const [open, setOpen] = React.useState(false);
+  const [formOpen, setFormOpen] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
+
+  // Destructive dialogs
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [deleteTarget, setDeleteTarget] = React.useState<JobApplication | null>(null);
+
+  const [clearOpen, setClearOpen] = React.useState(false);
 
   const [form, setForm] = React.useState({
     company: "",
@@ -80,10 +115,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
     let list = apps.slice();
 
     if (q) {
-      list = list.filter((a) => {
-        const hay = `${a.company} ${a.role}`.toLowerCase();
-        return hay.includes(q);
-      });
+      list = list.filter((a) => `${a.company} ${a.role}`.toLowerCase().includes(q));
     }
 
     if (statusFilter !== "all") {
@@ -94,7 +126,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
       if (sort === "company") return a.company.localeCompare(b.company);
       if (sort === "status") return a.status.localeCompare(b.status);
       if (sort === "oldest") return a.createdAt - b.createdAt;
-      return b.createdAt - a.createdAt; // newest
+      return b.createdAt - a.createdAt;
     });
 
     return list;
@@ -107,10 +139,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
       offer: [],
       rejected: [],
     };
-
-    for (const app of filtered) {
-      map[app.status].push(app);
-    }
+    for (const app of filtered) map[app.status].push(app);
     return map;
   }, [filtered]);
 
@@ -133,7 +162,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
 
   function openAdd() {
     resetForm();
-    setOpen(true);
+    setFormOpen(true);
   }
 
   function openEdit(app: JobApplication) {
@@ -147,7 +176,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
       notes: app.notes ?? "",
     });
     setErrors({});
-    setOpen(true);
+    setFormOpen(true);
   }
 
   function validate() {
@@ -193,17 +222,21 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
       toast.success("Application added.");
     }
 
-    setOpen(false);
+    setFormOpen(false);
     resetForm();
   }
 
-  function remove(id: string) {
-    const app = apps.find((a) => a.id === id);
-    const ok = confirm(`Delete ${app?.company ?? "this application"}?`);
-    if (!ok) return;
+  function requestDelete(app: JobApplication) {
+    setDeleteTarget(app);
+    setDeleteOpen(true);
+  }
 
-    setApps((prev) => prev.filter((a) => a.id !== id));
+  function confirmDelete() {
+    if (!deleteTarget) return;
+    setApps((prev) => prev.filter((a) => a.id !== deleteTarget.id));
     toast.success("Deleted.");
+    setDeleteOpen(false);
+    setDeleteTarget(null);
   }
 
   function seedDemo() {
@@ -241,15 +274,28 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
     toast.success("Demo data loaded.");
   }
 
-  function clearAll() {
-    const ok = confirm("Clear all saved applications? This cannot be undone.");
-    if (!ok) return;
-    setApps([]);
-    toast.success("All data cleared.");
+  function requestClearAll() {
+    setClearOpen(true);
   }
 
+  function confirmClearAll() {
+    setApps([]);
+    toast.success("All applications cleared.");
+    setClearOpen(false);
+  }
+
+  function resetFilters() {
+    setQuery("");
+    setStatusFilter("all");
+    setSort(prefs.defaultSort);
+    toast.message("Filters reset.");
+  }
+
+  const noData = apps.length === 0;
+  const filteredToZero = apps.length > 0 && filtered.length === 0;
+
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-[var(--jt-space)]">
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -263,7 +309,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
           <Button variant="secondary" onClick={seedDemo}>
             Load demo data
           </Button>
-          <Button variant="outline" onClick={clearAll}>
+          <Button variant="outline" onClick={requestClearAll} disabled={noData}>
             Clear all
           </Button>
           <Button onClick={openAdd}>Add application</Button>
@@ -278,6 +324,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
           </CardHeader>
           <CardContent className="text-3xl font-semibold">{stats.total}</CardContent>
         </Card>
+
         {STATUS_ORDER.map((s) => (
           <Card key={s} className="rounded-3xl">
             <CardHeader className="pb-2">
@@ -310,7 +357,6 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
             <select
               className="h-10 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               value={statusFilter}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e) => setStatusFilter(e.target.value as any)}
               aria-label="Filter by status"
             >
@@ -349,20 +395,35 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
         </CardContent>
       </Card>
 
-      {/* Board */}
-      {apps.length === 0 ? (
+      {/* Empty states */}
+      {noData ? (
         <Card className="rounded-3xl">
           <CardHeader>
             <CardTitle className="text-base">No applications yet</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Add your first role — it will persist after refresh.
+              Add your first role — it will persist after refresh. Or load demo data for a quick showcase.
             </p>
           </CardHeader>
-          <CardContent className="flex gap-2">
+          <CardContent className="flex flex-wrap gap-2">
             <Button onClick={openAdd}>Add application</Button>
             <Button variant="secondary" onClick={seedDemo}>
               Load demo data
             </Button>
+          </CardContent>
+        </Card>
+      ) : filteredToZero ? (
+        <Card className="rounded-3xl">
+          <CardHeader>
+            <CardTitle className="text-base">No results</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Your filters/search removed everything. Reset filters to see all items again.
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={resetFilters}>
+              Reset filters
+            </Button>
+            <Button onClick={openAdd}>Add application</Button>
           </CardContent>
         </Card>
       ) : (
@@ -372,9 +433,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm">{STATUS_LABEL[status]}</CardTitle>
-                  <span className="text-xs text-muted-foreground">
-                    {grouped[status].length}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{grouped[status].length}</span>
                 </div>
               </CardHeader>
 
@@ -383,7 +442,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                   <div className="rounded-2xl border bg-card p-4">
                     <p className="text-sm font-semibold">Empty</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      No items match this column.
+                      No items in this column right now.
                     </p>
                   </div>
                 ) : (
@@ -398,15 +457,17 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                           <p className="mt-1 text-sm text-muted-foreground">{app.role}</p>
 
                           <div className="mt-3 flex flex-wrap items-center gap-2">
-                            <Badge className={statusBadgeVariant(app.status)}>
+                            <Badge
+                              className={cn("rounded-full border px-2 py-0.5 text-xs", badgeClasses(app.status))}
+                            >
                               {STATUS_LABEL[app.status]}
                             </Badge>
 
-                            {app.appliedDate ? (
-                              <span className="text-xs text-muted-foreground">
-                                {app.appliedDate}
-                              </span>
-                            ) : null}
+                            <span className="text-xs text-muted-foreground">
+                              {app.appliedDate
+                                ? `Applied ${formatYMD(app.appliedDate)}`
+                                : `Added ${formatTimestamp(app.createdAt)}`}
+                            </span>
                           </div>
 
                           {app.link ? (
@@ -431,7 +492,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                           <Button size="sm" variant="secondary" onClick={() => openEdit(app)}>
                             Edit
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => remove(app.id)}>
+                          <Button size="sm" variant="outline" onClick={() => requestDelete(app)}>
                             Delete
                           </Button>
                         </div>
@@ -445,18 +506,17 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
         </div>
       )}
 
-      {/* Dialog: Add/Edit */}
-      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-        {/* Hidden trigger not needed since we control with buttons */}
-        <DialogTrigger asChild>
-          <span />
-        </DialogTrigger>
-
+      {/* Add/Edit Dialog */}
+      <Dialog
+        open={formOpen}
+        onOpenChange={(v) => {
+          setFormOpen(v);
+          if (!v) resetForm();
+        }}
+      >
         <DialogContent className="sm:max-w-lg rounded-3xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingId ? "Edit application" : "Add application"}
-            </DialogTitle>
+            <DialogTitle>{editingId ? "Edit application" : "Add application"}</DialogTitle>
           </DialogHeader>
 
           <div className="grid gap-4">
@@ -466,10 +526,9 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                 value={form.company}
                 onChange={(e) => setForm((p) => ({ ...p, company: e.target.value }))}
                 placeholder="e.g., Canva"
+                aria-invalid={!!errors.company}
               />
-              {errors.company ? (
-                <p className="text-sm text-rose-700">{errors.company}</p>
-              ) : null}
+              {errors.company ? <p className="text-sm text-rose-700">{errors.company}</p> : null}
             </div>
 
             <div className="grid gap-2">
@@ -478,10 +537,9 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                 value={form.role}
                 onChange={(e) => setForm((p) => ({ ...p, role: e.target.value }))}
                 placeholder="e.g., Junior Frontend Developer"
+                aria-invalid={!!errors.role}
               />
-              {errors.role ? (
-                <p className="text-sm text-rose-700">{errors.role}</p>
-              ) : null}
+              {errors.role ? <p className="text-sm text-rose-700">{errors.role}</p> : null}
             </div>
 
             <div className="grid gap-2">
@@ -489,7 +547,9 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
               <select
                 className="h-10 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                 value={form.status}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as any }))}
+                aria-invalid={!!errors.status}
               >
                 <option value="">Select…</option>
                 {STATUS_ORDER.map((s) => (
@@ -498,9 +558,7 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                   </option>
                 ))}
               </select>
-              {errors.status ? (
-                <p className="text-sm text-rose-700">{errors.status}</p>
-              ) : null}
+              {errors.status ? <p className="text-sm text-rose-700">{errors.status}</p> : null}
             </div>
 
             <div className="grid gap-2">
@@ -518,13 +576,12 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
                 value={form.link}
                 onChange={(e) => setForm((p) => ({ ...p, link: e.target.value }))}
                 placeholder="https://…"
+                aria-invalid={!!errors.link}
               />
               {errors.link ? (
                 <p className="text-sm text-rose-700">{errors.link}</p>
               ) : (
-                <p className="text-xs text-muted-foreground">
-                  Optional, but useful for quick access.
-                </p>
+                <p className="text-xs text-muted-foreground">Optional, but useful for quick access.</p>
               )}
             </div>
 
@@ -538,16 +595,50 @@ const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
             </div>
 
             <div className="flex flex-wrap justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>
+              <Button variant="outline" onClick={() => setFormOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={upsert}>
-                {editingId ? "Save changes" : "Add application"}
-              </Button>
+              <Button onClick={upsert}>{editingId ? "Save changes" : "Add application"}</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete AlertDialog */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent className="rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete application?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove{" "}
+              <span className="font-semibold text-foreground">
+                {deleteTarget ? `${deleteTarget.company} — ${deleteTarget.role}` : "this item"}
+              </span>{" "}
+              from this browser.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear All AlertDialog */}
+      <AlertDialog open={clearOpen} onOpenChange={setClearOpen}>
+        <AlertDialogContent className="rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all applications?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes all saved applications from this browser. Preferences remain in Settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClearAll}>Clear all</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

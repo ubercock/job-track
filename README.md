@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JobTrack — Job Application Tracker (Next.js + TypeScript + shadcn/ui)
 
-## Getting Started
+JobTrack is a frontend-only job application tracker designed to feel like a real internal tool.  
+It supports CRUD, fast filtering, lightweight insights, and persistent storage using localStorage — deployable to Vercel.
 
-First, run the development server:
+This project is intentionally built to maximize junior hiring signals: routing, reusable components, validation, UX states, accessibility patterns, and clean architecture.
+
+---
+
+## Problem → Solution
+
+**Problem:** Job searching gets messy fast — scattered notes, forgotten follow-ups, no clear view of your pipeline.  
+**Solution:** JobTrack provides a clean pipeline, searchable list/board layout, and lightweight insights — all stored locally so it works without a backend.
+
+---
+
+## Key Features
+
+### Core Product
+- ✅ Add / Edit / Delete job applications (CRUD)
+- ✅ Search + filter by status + sort
+- ✅ Pipeline board grouped by status
+- ✅ Insights page: KPI totals + status breakdown bars + top companies
+
+### UX & Polish
+- ✅ Multi-page routing (App Router): Home, Tracker, Insights, Settings
+- ✅ Reusable component system via shadcn/ui (Button, Card, Input, Badge, Dialog, Skeleton, Toast)
+- ✅ Empty states + filtered-to-zero state + success toasts
+- ✅ Safe destructive actions via AlertDialog (no `confirm()`)
+
+### Accessibility & Performance
+- ✅ Keyboard-first UI (Radix primitives via shadcn/ui)
+- ✅ Focus-visible rings and semantic structure
+- ✅ Lightweight CSS bars (no chart libraries)
+- ✅ Frontend-only: fast dev loop and easy deploy
+
+---
+
+## Tech Stack
+
+- Next.js (App Router)
+- React + TypeScript
+- Tailwind CSS
+- shadcn/ui (Radix + Tailwind)
+- Sonner toasts
+
+---
+
+## localStorage: What’s stored and why
+
+This project uses localStorage to simulate “real product behavior” without a backend:
+
+- **`jobtrack.apps.v1`**  
+  Stores the array of job applications (company, role, status, notes, timestamps).  
+  **Why:** Your tracker data persists after refresh and can be demoed offline.
+
+- **`jobtrack.prefs.v1`**  
+  Stores user preferences like density (compact/comfort) and default sort.  
+  **Why:** A real app remembers user preferences across sessions.
+
+---
+
+## Folder Structure (App Router)
+
+<br>|_src/
+<br>&nbsp;|_app/
+<br>&nbsp;&nbsp;|__page.tsx
+<br>&nbsp;&nbsp;|__layout.tsx
+<br>&nbsp;&nbsp;|__globals.css
+<br>&nbsp;&nbsp;|__tracker/
+<br>&nbsp;&nbsp;&nbsp;|__page.tsx
+<br>&nbsp;&nbsp;&nbsp;|__tracker-client.tsx
+<br>&nbsp;&nbsp;&nbsp;|__loading.tsx
+<br>&nbsp;&nbsp;|__insights/
+<br>&nbsp;&nbsp;&nbsp;|__page.tsx
+<br>&nbsp;&nbsp;&nbsp;|__insights-client.tsx
+<br>&nbsp;&nbsp;&nbsp;|__loading.tsx
+<br>&nbsp;&nbsp;|__settings/
+<br>&nbsp;&nbsp;&nbsp;|__page.tsx
+<br>&nbsp;&nbsp;&nbsp;|__settings-client.tsx
+<br>&nbsp;|__components/
+<br>&nbsp;&nbsp;|__site-header.tsx
+<br>&nbsp;&nbsp;|__site-footer.tsx
+<br>&nbsp;&nbsp;|__prefs-sync.tsx
+<br>&nbsp;&nbsp;|__ui/ (shadcn components)
+<br>&nbsp;|__lib/
+<br>&nbsp;&nbsp;|__types.ts
+<br>&nbsp;&nbsp;|__storage.ts
+<br>&nbsp;&nbsp;|__utils.ts
+<br>
+
+---
+
+## Run Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Open: http://localhost:3000
 ```
+---
+## What I Learned
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- *How to build a multi-page App Router project with shared layout*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- *How to design a reusable component system with shadcn/ui*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- *How to implement frontend persistence (localStorage) safely*
 
-## Learn More
+- *How to ship UX states: empty, filtered-to-zero, success feedback, safe destructive flows*
 
-To learn more about Next.js, take a look at the following resources:
+- *How to keep UI accessible with keyboard navigation and focus management primitives*
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Interview Talking Points (10)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**App Router structure: separated marketing vs product pages for clarity and SEO.**
 
-## Deploy on Vercel
+**Client/server boundary: interactive pages use use client; static shells remain server-rendered.**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Persistence choice: localStorage simulates backend persistence without adding complexity.**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Data model: strongly typed JobApplication keeps UI predictable and reduces bugs.**
+
+**Hook design: useLocalStorageState loads once and safely recovers from corrupted JSON.**
+
+**UX states: intentionally designed empty and filtered-to-zero states to avoid “dead UI”.**
+
+**Accessible destructive actions: replaced confirm() with AlertDialog for focus + intent clarity.**
+
+**Performance tradeoff: avoided heavy charts; used CSS bars for fast insights visuals.**
+
+**Reusable components: consistent design language via shadcn/ui; no “UI soup”.**
+
+**Preference sync: density stored + applied globally using a single PrefsSync component.**
+
+## Hiring Manager Checklist (what this proves)
+
+✅ *Can build a real, deployable Next.js app (routing + layout)*
+
+✅ *Understands component systems (reusability + consistency)*
+
+✅ *Can manage state and persistence without Redux*
+
+✅ *Can implement validation and user feedback*
+
+✅ *Thinks about accessibility and safe UI patterns*
+
+✅ *Designs clean responsive layouts with strong hierarchy*
+
+---

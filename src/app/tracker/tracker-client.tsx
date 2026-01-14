@@ -5,8 +5,9 @@ import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { JobApplication, JobStatus, STATUS_LABEL, STATUS_ORDER } from "@/lib/types";
+import { DEFAULT_PREFS, JobApplication, JobStatus, STATUS_LABEL, STATUS_ORDER, UserPrefs } from "@/lib/types";
 import { STORAGE_KEYS, useLocalStorageState } from "@/lib/storage";
+
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,11 +48,16 @@ function statusBadgeVariant(status: JobStatus) {
 
 export function TrackerClient() {
   const [apps, setApps] = useLocalStorageState<JobApplication[]>(STORAGE_KEYS.apps, []);
+  const [prefs] = useLocalStorageState<UserPrefs>(STORAGE_KEYS.prefs, DEFAULT_PREFS);
+
 
   // Controls
   const [query, setQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<JobStatus | "all">("all");
-  const [sort, setSort] = React.useState<SortMode>("newest");
+const [sort, setSort] = React.useState<SortMode>(prefs.defaultSort);
+
+// If prefs change later, keep the current sort (don’t override user mid-session)
+// If you want it to always follow prefs, you could sync it here.
 
   // Dialog + form state
   const [open, setOpen] = React.useState(false);

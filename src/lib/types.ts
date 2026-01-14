@@ -24,3 +24,16 @@ export const STATUS_LABEL: Record<JobStatus, string> = {
 };
 
 export const STATUS_ORDER: JobStatus[] = ["applied", "interview", "offer", "rejected"];
+export type Density = "comfort" | "compact";
+
+export type SortMode = "newest" | "oldest" | "company" | "status";
+
+export type UserPrefs = {
+  density: Density;
+  defaultSort: SortMode;
+};
+
+export const DEFAULT_PREFS: UserPrefs = {
+  density: "comfort",
+  defaultSort: "newest",
+};

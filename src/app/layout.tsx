@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/sonner";
+import { PrefsSync } from "@/components/prefs-sync";
 
 export const metadata: Metadata = {
   title: {
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-dvh bg-background text-foreground antialiased">
+        <PrefsSync />
         <SiteHeader />
         <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">{children}</main>
         <SiteFooter />

